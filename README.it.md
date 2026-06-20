@@ -10,10 +10,10 @@ Fornisce un `CommandBus` e un `QueryBus` che instradano comandi e query attraver
 
 ## Requisiti
 
-| Dipendenza | Versione |
-|---|---|
-| PHP | `^8.2` |
-| Laravel | `^11.0` o `^12.0` |
+| Dipendenza | Versione          |
+| ---------- | ----------------- |
+| PHP        | `^8.2`            |
+| Laravel    | `^11.0` o `^12.0` |
 
 ---
 
@@ -303,9 +303,3 @@ Qualsiasi behavior inserito dopo di esso non verrà mai eseguito.
 
 **Non aggiungere `TransactionBehavior` alla query pipeline.**
 Avvolgere query read-only in transazioni è overhead inutile. La configurazione di default già riflette questo.
-
----
-
-## Licenza
-
-MIT

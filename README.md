@@ -303,9 +303,3 @@ Any behavior placed after it will never execute.
 
 **Do not add `TransactionBehavior` to the query pipeline.**
 Wrapping read-only queries in transactions is unnecessary overhead. The default configuration already reflects this.
-
----
-
-## License
-
-MIT
