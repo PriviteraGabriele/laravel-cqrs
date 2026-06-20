@@ -13,7 +13,7 @@ Fornisce un `CommandBus` e un `QueryBus` che instradano comandi e query attraver
 | Dipendenza | Versione          |
 | ---------- | ----------------- |
 | PHP        | `^8.2`            |
-| Laravel    | `^11.0` o `^12.0` |
+| Laravel    | `^11.0`, `^12.0` o `^13.0` |
 
 ---
 
@@ -173,6 +173,70 @@ class CreateUserCommandValidator implements ValidatesCommandInterface
 
 ---
 
+### 6 — Transazioni
+
+`TransactionBehavior` è incluso nella pipeline di default per i command. Non è necessaria alcuna configurazione: ogni command viene avvolto automaticamente in un `DB::transaction()`. Se viene lanciata un'eccezione — dal validator, dall'handler o da qualsiasi behavior a valle — l'intera transazione viene rollbackata.
+
+```php
+class TransferFundsCommandHandler implements CommandHandlerInterface
+{
+    public function handle(TransferFundsCommand $command): void
+    {
+        // Entrambe le scritture avvengono nella stessa transazione DB.
+        // Se la seconda lancia un'eccezione, la prima viene rollbackata automaticamente.
+        Account::find($command->fromId)->decrement('balance', $command->amount);
+        Account::find($command->toId)->increment('balance', $command->amount);
+    }
+}
+```
+
+Per disabilitare le transazioni automatiche, rimuovi `TransactionBehavior` dalla `command_pipeline` nel tuo `config/cqrs.php` pubblicato:
+
+```php
+'command_pipeline' => [
+    LoggingBehavior::class,
+    ValidationBehavior::class,
+    // TransactionBehavior::class — rimosso
+    HandlerExecutionBehavior::class,
+],
+```
+
+> **Nota:** Non aggiungere mai `TransactionBehavior` alla query pipeline. Le query read-only non necessitano di transazioni.
+
+---
+
+### 7 — Logging
+
+`LoggingBehavior` è incluso nella pipeline di default per i command. Scrive due log per ogni command: uno al momento del dispatch e uno al completamento.
+
+```
+[CQRS] CreateUserCommand dispatched
+[CQRS] CreateUserCommand completed
+```
+
+Di default usa il canale di log predefinito dell'applicazione a livello `debug`. Entrambe le impostazioni sono configurabili:
+
+```php
+// config/cqrs.php
+'logging' => [
+    'channel' => 'daily',   // scrivi su un canale di log specifico di Laravel
+    'level'   => 'info',    // qualsiasi livello PSR-3: debug, info, notice, warning, error
+],
+```
+
+Per disabilitare il logging completamente, rimuovi `LoggingBehavior` dalla `command_pipeline`:
+
+```php
+'command_pipeline' => [
+    // LoggingBehavior::class — rimosso
+    ValidationBehavior::class,
+    TransactionBehavior::class,
+    HandlerExecutionBehavior::class,
+],
+```
+
+---
+
 ## Configurazione
 
 Dopo la pubblicazione, `config/cqrs.php` espone tre aree di configurazione.
@@ -303,3 +367,11 @@ Qualsiasi behavior inserito dopo di esso non verrà mai eseguito.
 
 **Non aggiungere `TransactionBehavior` alla query pipeline.**
 Avvolgere query read-only in transazioni è overhead inutile. La configurazione di default già riflette questo.
+
+---
+
+## Licenza
+
+Questo package è software open source rilasciato sotto la [MIT License](LICENSE).
+
+Sei libero di usarlo, modificarlo e distribuirlo in progetti privati e commerciali. L'unico requisito è mantenere l'avviso di copyright in qualsiasi copia o parte sostanziale del software.
