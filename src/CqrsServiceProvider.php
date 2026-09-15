@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use TheCorps\LaravelCqrs\Bus\CommandBus;
 use TheCorps\LaravelCqrs\Pipeline\Pipeline;
 use TheCorps\LaravelCqrs\Pipeline\MetadataResolver;
+use TheCorps\LaravelCqrs\Console\InstallAgentRulesCommand;
 use TheCorps\LaravelCqrs\Pipeline\Behaviors\LoggingBehavior;
 use TheCorps\LaravelCqrs\Pipeline\Behaviors\ValidationBehavior;
 use TheCorps\LaravelCqrs\Pipeline\Behaviors\TransactionBehavior;
@@ -44,6 +45,10 @@ class CqrsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
+            $this->commands([
+                InstallAgentRulesCommand::class,
+            ]);
+
             $this->publishes([
                 __DIR__ . '/../config/cqrs.php' => config_path('cqrs.php'),
             ], 'cqrs-config');
