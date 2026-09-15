@@ -20,6 +20,17 @@
             "TheCorps\\LaravelCqrs\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "TheCorps\\LaravelCqrs\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0|^11.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "extra": {
         "laravel": {
             "providers": [

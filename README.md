@@ -370,6 +370,29 @@ Wrapping read-only queries in transactions is unnecessary overhead. The default 
 
 ---
 
+## Coding-agent integration
+
+If your application uses Codex or Claude Code, install the project-local CQRS rules after requiring the package:
+
+```bash
+php artisan cqrs:install-agent-rules
+```
+
+The command creates or updates four files in the Laravel application root:
+
+```text
+AGENTS.md
+CLAUDE.md
+.agents/skills/laravel-cqrs/SKILL.md
+.claude/skills/laravel-cqrs/SKILL.md
+```
+
+`AGENTS.md` and `CLAUDE.md` receive a marker-delimited block, so existing project instructions are preserved. The two skill copies give both agents the same mandatory CQRS conventions: commands for writes, read-only queries, immutable DTOs, feature-based use-case folders, thin handlers, domain validators, and pipeline invariants. Re-running the command updates only the managed block and managed skills. It refuses to overwrite an existing skill that is not managed by this package.
+
+The integration guides coding agents; it is not a replacement for automated architecture checks or code review. See the [agent integration guide](docs/agent-integration.md) for the complete rules and maintenance details.
+
+---
+
 ## License
 
 This package is open-source software released under the [MIT License](LICENSE).
